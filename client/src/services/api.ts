@@ -17,6 +17,8 @@ export interface Video {
   description: string;
   avatar: string;
   video_url: string;
+  download_url: string;
+  stream_url: string;
   tavus_video_id: string;
   status: "processing" | "completed" | "failed";
   created_at: string;
@@ -196,7 +198,19 @@ class ApiClient {
       }>
     >("/api/videos");
   }
-
+  async getVideoStatus(): Promise<
+    ApiResponse<{
+      videos: Video[];
+      count: number;
+    }>
+  > {
+    return this.request<
+      ApiResponse<{
+        videos: Video[];
+        count: number;
+      }>
+    >("/api/videoStatus");
+  }
   async deleteVideo(id: number): Promise<
     ApiResponse<{
       message: string;

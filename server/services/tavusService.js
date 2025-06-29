@@ -45,13 +45,16 @@ const generateVideo = async (videoData) => {
     if (!response.data || !response.data.video_id) {
       throw new Error("Invalid response from Tavus API");
     }
+    console.log(response);
 
     // Return the video information
     return {
       video_id: response.data.video_id,
-      video_url: response.data.hosted_url || response.data.download_url,
+      video_url: response.data.hosted_url,
+      download_url: response.data.download_url,
       status: response.data.status || "processing",
       created_at: new Date().toISOString(),
+      stream_url: response.data.stream_url,
     };
   } catch (error) {
     console.error("Tavus API Error:", error.response?.data || error.message);
@@ -78,11 +81,13 @@ const generateVideo = async (videoData) => {
 const getVideoStatus = async (videoId) => {
   try {
     const response = await tavusClient.get(`/videos/${videoId}`);
+    console.log(response);
 
     return {
       video_id: response.data.video_id,
       status: response.data.status,
-      video_url: response.data.video_url || response.data.download_url,
+      video_url: response.data.video_url,
+      download_url: response.data.download_url,
       progress: response.data.progress || 0,
     };
   } catch (error) {

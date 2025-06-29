@@ -26,18 +26,13 @@ const FormPage: React.FC = () => {
     setError("");
 
     try {
-      const avatarUrl =
-        avatar === "male"
-          ? "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg"
-          : "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg";
-
       const formData = {
         formType: cardType,
         name,
         role: cardType === "personal" ? role : undefined,
         tagline,
         description,
-        avatar: avatarUrl,
+        avatar: avatar,
       };
 
       const response = await apiClient.createVideo(formData);

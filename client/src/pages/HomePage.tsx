@@ -1,35 +1,41 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Play, Sparkles, Share2, Crown, ArrowRight, Star } from 'lucide-react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import Button from '../components/Button';
-import FloatingBadge from '../components/FloatingBadge';
+import React from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Play, Sparkles, Share2, Crown, ArrowRight, Star } from "lucide-react";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import Button from "../components/Button";
+import FloatingBadge from "../components/FloatingBadge";
+import { useAuth } from "../contexts/AuthContext";
 
 const HomePage: React.FC = () => {
+  const { user } = useAuth();
+
   const features = [
     {
       icon: <Sparkles className="w-6 h-6" />,
-      title: 'AI-Powered Generation',
-      description: 'Advanced AI creates professional video business cards tailored to your brand.'
+      title: "AI-Powered Generation",
+      description:
+        "Advanced AI creates professional video business cards tailored to your brand.",
     },
     {
       icon: <Share2 className="w-6 h-6" />,
-      title: 'Instant Sharing',
-      description: 'Share your video business card instantly with a custom link.'
+      title: "Instant Sharing",
+      description:
+        "Share your video business card instantly with a custom link.",
     },
     {
       icon: <Crown className="w-6 h-6" />,
-      title: 'Pro Features',
-      description: 'Unlock unlimited videos, custom domains, and advanced analytics.'
-    }
+      title: "Pro Features",
+      description:
+        "Unlock unlimited videos, custom domains, and advanced analytics.",
+    },
   ];
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       {/* Hero Section */}
       <section className="relative px-4 sm:px-6 lg:px-8 pt-20 pb-32">
         <div className="max-w-7xl mx-auto">
@@ -50,30 +56,35 @@ const HomePage: React.FC = () => {
                   <Star className="w-4 h-4 mr-1" />
                   AI-Powered Video Business Cards
                 </motion.div>
-                
+
                 <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight">
-                  Create your{' '}
+                  Create your{" "}
                   <span className="bg-gradient-to-r from-accent to-blue-400 bg-clip-text text-transparent">
                     AI-powered
                   </span>
                   <br />
                   video business card
                 </h1>
-                
+
                 <p className="text-xl text-muted max-w-3xl mx-auto">
-                  Stand out from the crowd with personalized video business cards powered by AI. 
-                  Perfect for networking, job applications, and personal branding.
+                  Stand out from the crowd with personalized video business
+                  cards powered by AI. Perfect for networking, job applications,
+                  and personal branding.
                 </p>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Link to="/form">
+                <Link to={user ? "/dashboard" : "/form"}>
                   <Button size="lg" className="w-full sm:w-auto">
-                    Get Started
+                    {user ? "Go to Dashboard" : "Get Started"}
                     <ArrowRight className="w-5 h-5" />
                   </Button>
                 </Link>
-                <Button variant="secondary" size="lg" className="w-full sm:w-auto">
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  className="w-full sm:w-auto"
+                >
                   <Play className="w-5 h-5" />
                   See Examples
                 </Button>
@@ -102,7 +113,8 @@ const HomePage: React.FC = () => {
               Everything you need to stand out
             </h2>
             <p className="text-muted text-lg max-w-2xl mx-auto">
-              Create professional video business cards with cutting-edge AI technology
+              Create professional video business cards with cutting-edge AI
+              technology
             </p>
           </motion.div>
 
@@ -120,7 +132,9 @@ const HomePage: React.FC = () => {
                   {feature.icon}
                 </div>
                 <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-                <p className="text-muted leading-relaxed">{feature.description}</p>
+                <p className="text-muted leading-relaxed">
+                  {feature.description}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -140,12 +154,13 @@ const HomePage: React.FC = () => {
               Ready to create your video business card?
             </h2>
             <p className="text-muted text-lg mb-8 max-w-2xl mx-auto">
-              Join thousands of professionals who are already using HypeCard to make lasting impressions.
+              Join thousands of professionals who are already using HypeCard to
+              make lasting impressions.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/form">
+              <Link to={user ? "/dashboard" : "/form"}>
                 <Button size="lg">
-                  Start Creating
+                  {user ? "Go to Dashboard" : "Start Creating"}
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </Link>

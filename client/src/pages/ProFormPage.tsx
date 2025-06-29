@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Building, Video, Crown, Copy, Download, ExternalLink } from 'lucide-react';
+import { User, Building, Video, Crown, Copy, Download, ExternalLink, AlertCircle } from 'lucide-react';
 import Header from '../components/Header';
 import Button from '../components/Button';
 import Input from '../components/Input';
+import { apiClient } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 const ProFormPage: React.FC = () => {
   const [cardType, setCardType] = useState<'personal' | 'business'>('personal');
@@ -14,41 +16,69 @@ const ProFormPage: React.FC = () => {
   const [description, setDescription] = useState('');
   const [avatar, setAvatar] = useState<'male' | 'female'>('male');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedVideo, setGeneratedVideo] = useState<string | null>(null);
-  const [shareableLink, setShareableLink] = useState<string | null>(null);
+  const [generatedVideo, setGeneratedVideo] = useState<any>(null);
+  const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  // Redirect non-pro users
+  React.useEffect(() => {
+    if (user && !user.isPro) {
+      navigate('/pro');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsGenerating(true);
+    setError('');
     
-    // Mock video generation
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    // Generate mock video ID and shareable link
-    const videoId = Math.random().toString(36).substring(2, 15);
-    const customLink = `hypecard.me/${name.toLowerCase().replace(/\s+/g, '-')}-${Math.random().toString(36).substring(2, 8)}`;
-    
-    setGeneratedVideo(videoId);
-    setShareableLink(customLink);
-    setIsGenerating(false);
+    try {
+      const avatarUrl = avatar === 'male' 
+        ? 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg'
+        : 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg';
+
+      const formData = {
+        formType: cardType,
+        name,
+        role: cardType === 'personal' ? role : undefined,
+        tagline,
+        description,
+        avatar: avatarUrl,
+      };
+
+      const response = await apiClient.createVideo(formData);
+      setGeneratedVideo({
+        ...response.data,
+        name,
+        tagline,
+        description,
+        shareableLink: `hypecard.me/${name.toLowerCase().replace(/\s+/g, '-')}-${response.data.id}`
+      });
+    } catch (err: any) {
+      setError(err.message || 'Failed to generate video. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const copyToClipboard = async () => {
-    if (shareableLink) {
-      await navigator.clipboard.writeText(`https://${shareableLink}`);
+    if (generatedVideo?.shareableLink) {
+      await navigator.clipboard.writeText(`https://${generatedVideo.shareableLink}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
   };
 
   const downloadVideo = () => {
-    // Mock download functionality
-    const link = document.createElement('a');
-    link.href = '#';
-    link.download = 'hypecard-video.mp4';
-    link.click();
+    if (generatedVideo?.video_url) {
+      const link = document.createElement('a');
+      link.href = generatedVideo.video_url;
+      link.download = `${name}-hypecard.mp4`;
+      link.target = '_blank';
+      link.click();
+    }
   };
 
   if (generatedVideo) {
@@ -78,12 +108,23 @@ const ProFormPage: React.FC = () => {
               className="bg-surface/50 backdrop-blur-xl rounded-2xl p-8 border border-border"
             >
               {/* Video Preview */}
-              <div className="aspect-video bg-gray-800 rounded-lg mb-6 flex items-center justify-center">
-                <div className="text-center">
-                  <Video className="w-16 h-16 text-accent mx-auto mb-4" />
-                  <p className="text-white font-medium">Your Video Business Card</p>
-                  <p className="text-muted text-sm">HD Quality • No Watermark</p>
-                </div>
+              <div className="aspect-video bg-gray-800 rounded-lg mb-6 flex items-center justify-center relative overflow-hidden">
+                {generatedVideo.video_url ? (
+                  <video
+                    controls
+                    className="w-full h-full object-cover rounded-lg"
+                  >
+                    <source src={generatedVideo.video_url} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                ) : (
+                  <div className="text-center">
+                    <Video className="w-16 h-16 text-accent mx-auto mb-4" />
+                    <p className="text-white font-medium">Your Video Business Card</p>
+                    <p className="text-muted text-sm">HD Quality • No Watermark</p>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-blue-500/10" />
               </div>
 
               {/* Shareable Link */}
@@ -94,7 +135,7 @@ const ProFormPage: React.FC = () => {
                 </h3>
                 <div className="flex items-center space-x-2">
                   <div className="flex-1 px-4 py-3 bg-surface border border-border rounded-lg text-white">
-                    https://{shareableLink}
+                    https://{generatedVideo.shareableLink}
                   </div>
                   <Button
                     variant="secondary"
@@ -115,7 +156,7 @@ const ProFormPage: React.FC = () => {
                 </Button>
                 <Button
                   variant="secondary"
-                  onClick={() => window.open(`https://${shareableLink}`, '_blank')}
+                  onClick={() => navigate(`/card/${generatedVideo.id}`)}
                   className="flex-1"
                 >
                   <ExternalLink className="w-5 h-5" />
@@ -289,6 +330,17 @@ const ProFormPage: React.FC = () => {
                   <li>• Priority processing and support</li>
                 </ul>
               </div>
+
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start space-x-3"
+                >
+                  <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-red-400 text-sm">{error}</p>
+                </motion.div>
+              )}
 
               <Button
                 type="submit"

@@ -23,7 +23,12 @@ const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2">
-            <img src="/logo.png" alt="HypeCard Logo" width={50} height={50} />
+            <img
+              src="https://i.ibb.co/WWHYcYDT/logo.png"
+              alt="HypeCard Logo"
+              width={50}
+              height={50}
+            />
             <span className="text-xl font-bold">HypeCard</span>
           </Link>
 

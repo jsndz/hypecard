@@ -17,6 +17,7 @@ const FormPage: React.FC = () => {
   const [avatar, setAvatar] = useState<"male" | "female">("male");
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState("");
+
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
 
@@ -52,6 +53,17 @@ const FormPage: React.FC = () => {
       setIsGenerating(false);
     }
   };
+  if (isGenerating) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+        <Header />
+        <div className="text-center py-20">
+          <Video className="w-8 h-8 animate-pulse text-accent mx-auto mb-4" />
+          <p className="text-muted text-lg">Generating your video...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

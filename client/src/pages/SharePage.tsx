@@ -83,8 +83,39 @@ const SharePage: React.FC = () => {
     );
   }
   if (videoData?.download_url == null || videoData.stream_url == null) {
-    return <div>Video is getting generated...</div>;
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4">
+        <div className="text-center max-w-md">
+          <div className="animate-spin mb-6 inline-block">
+            <svg
+              className="w-10 h-10 text-accent"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v1m6.364 1.636l-.707.707M20 12h-1M17.657 17.657l-.707-.707M12 20v-1M6.343 17.657l.707-.707M4 12h1M6.343 6.343l.707.707"
+              />
+            </svg>
+          </div>
+          <h2 className="text-xl font-semibold text-white mb-2">
+            Generating Your Video
+          </h2>
+          <p className="text-muted mb-6">
+            Please wait a moment while we prepare your personalized video card.
+            This usually takes less than a minute.
+          </p>
+          <div className="w-full bg-border rounded-full h-2 overflow-hidden">
+            <div className="bg-accent h-full animate-pulse w-1/2"></div>
+          </div>
+        </div>
+      </div>
+    );
   }
+
   if (error || !videoData) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">

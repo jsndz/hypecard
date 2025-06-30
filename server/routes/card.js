@@ -1,5 +1,6 @@
 const express = require("express");
 const { supabase } = require("../services/supabaseClient");
+const { getVideoStatus } = require("../services/tavusService");
 
 const router = express.Router();
 
@@ -35,6 +36,7 @@ router.get("/card/:id", async (req, res) => {
         video_url,
         stream_url,
         download_url,
+        tavus_video_id,
         created_at
       `
       )
@@ -50,17 +52,19 @@ router.get("/card/:id", async (req, res) => {
         },
       });
     }
+    console.log("there");
+
     // If stream_url or download_url is missing and video is not failed
-    if (
-      (!video.stream_url || !video.download_url) &&
-      video.tavus_video_id &&
-      video.status !== "failed"
-    ) {
+    if (!video.stream_url || !video.download_url) {
       try {
+        console.log("check");
+
         const updatedStatus = await getVideoStatus(video.tavus_video_id);
 
+        console.log(updatedStatus);
+
         const updatedFields = {
-          stream_url: updatedStatus.video_url || video.stream_url,
+          stream_url: updatedStatus.stream_url || video.stream_url,
           download_url: updatedStatus.download_url || video.download_url,
           status: updatedStatus.status || video.status,
         };
@@ -77,6 +81,12 @@ router.get("/card/:id", async (req, res) => {
         );
       }
     }
+    console.log("there2");
+
+    console.log(video);
+
+    // console.log(res);
+
     // Return public card data
     res.json({
       success: true,

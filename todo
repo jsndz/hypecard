@@ -6,3 +6,4 @@ createvideo -> hostedUrl
 after creating redirect to tavus url
 get video
 then update stream_url and download_url
+fix dashboard

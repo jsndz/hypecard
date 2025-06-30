@@ -1,0 +1,8 @@
+the video page showing error when the video is getting built by the tavus
+so when it is building give the tavus_url
+after the building is done update stream and video_url
+
+createvideo -> hostedUrl
+after creating redirect to tavus url
+get video
+then update stream_url and download_url

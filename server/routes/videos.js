@@ -70,8 +70,6 @@ router.post("/form", authenticateUser, async (req, res) => {
         description: description || null,
         avatar: avatar || null,
         video_url: videoData.video_url,
-        download_url: videoData.download_url,
-        stream_url: videoData.stream_url,
         tavus_video_id: videoData.video_id,
         status: videoData.status || "processing",
       })

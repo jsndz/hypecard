@@ -82,7 +82,9 @@ const SharePage: React.FC = () => {
       </div>
     );
   }
-
+  if (videoData?.download_url == null || videoData.stream_url == null) {
+    return <div>Video is getting generated...</div>;
+  }
   if (error || !videoData) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">

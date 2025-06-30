@@ -51,10 +51,8 @@ const generateVideo = async (videoData) => {
     return {
       video_id: response.data.video_id,
       video_url: response.data.hosted_url,
-      download_url: response.data.download_url,
       status: response.data.status || "processing",
       created_at: new Date().toISOString(),
-      stream_url: response.data.stream_url,
     };
   } catch (error) {
     console.error("Tavus API Error:", error.response?.data || error.message);
@@ -89,6 +87,7 @@ const getVideoStatus = async (videoId) => {
       video_url: response.data.video_url,
       download_url: response.data.download_url,
       progress: response.data.progress || 0,
+      stream_url: response.data.stream_url,
     };
   } catch (error) {
     console.error(

@@ -37,8 +37,7 @@ const FormPage: React.FC = () => {
 
       const response = await apiClient.createVideo(formData);
 
-      // Navigate to the share page with the video ID
-      navigate(`/card/${response.data.id}`);
+      window.open(response.data.video_url, "_blank");
     } catch (err: any) {
       setError(err.message || "Failed to generate video. Please try again.");
 

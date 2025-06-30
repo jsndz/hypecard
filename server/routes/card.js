@@ -50,7 +50,33 @@ router.get("/card/:id", async (req, res) => {
         },
       });
     }
+    // If stream_url or download_url is missing and video is not failed
+    if (
+      (!video.stream_url || !video.download_url) &&
+      video.tavus_video_id &&
+      video.status !== "failed"
+    ) {
+      try {
+        const updatedStatus = await getVideoStatus(video.tavus_video_id);
 
+        const updatedFields = {
+          stream_url: updatedStatus.video_url || video.stream_url,
+          download_url: updatedStatus.download_url || video.download_url,
+          status: updatedStatus.status || video.status,
+        };
+
+        // Save updated data
+        await supabase.from("videos").update(updatedFields).eq("id", cardId);
+
+        // Merge into video object for return
+        Object.assign(video, updatedFields);
+      } catch (statusError) {
+        console.error(
+          "Failed to update video status from Tavus:",
+          statusError.message
+        );
+      }
+    }
     // Return public card data
     res.json({
       success: true,

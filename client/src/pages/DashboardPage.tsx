@@ -55,6 +55,7 @@ const DashboardPage: React.FC = () => {
       return;
     }
     fetchVideos();
+    console.log();
   }, [user, navigate]);
   const requestDelete = (id: number) => {
     setPendingDeleteId(id);
@@ -84,6 +85,8 @@ const DashboardPage: React.FC = () => {
     try {
       setLoading(true);
       const response = await apiClient.getVideos();
+      console.log("repsonse");
+
       setVideos(response.data.videos);
     } catch (err: any) {
       setError(err.message || "Failed to load videos");
@@ -373,14 +376,15 @@ const DashboardPage: React.FC = () => {
                 >
                   {/* Video Thumbnail */}
                   <div className="aspect-video bg-gray-800 relative overflow-hidden">
-                    {video.video_url ? (
-                      <HLSPlayer src={video.stream_url}></HLSPlayer>
+                    {video.status === "completed" && video.stream_url ? (
+                      <HLSPlayer src={video.stream_url} />
                     ) : (
                       <div className="flex items-center justify-center h-full">
                         <div className="text-center">
                           {getStatusIcon(video.status)}
                           <p className="text-sm text-muted mt-2 capitalize">
                             {video.status}
+                            {video.stream_url}
                           </p>
                         </div>
                       </div>

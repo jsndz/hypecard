@@ -17,6 +17,9 @@ const FormPage: React.FC = () => {
   const [avatar, setAvatar] = useState<"male" | "female">("male");
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState("");
+  const [generatedVideoUrl, setGeneratedVideoUrl] = useState<string | null>(
+    null
+  );
 
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
@@ -37,8 +40,7 @@ const FormPage: React.FC = () => {
       };
 
       const response = await apiClient.createVideo(formData);
-
-      window.open(response.data.video_url, "_blank");
+      setGeneratedVideoUrl(response.data.video_url);
     } catch (err: any) {
       setError(err.message || "Failed to generate video. Please try again.");
 
@@ -269,6 +271,28 @@ const FormPage: React.FC = () => {
           </motion.div>
         </motion.div>
       </div>
+      {generatedVideoUrl && (
+        <div className="flex flex-col items-center justify-center mt-8">
+          <div className="bg-surface/60 border border-border rounded-xl px-6 py-4 text-center shadow-md max-w-md">
+            <p className="text-accent font-medium text-sm mb-2">
+              Your video is getting ready!
+            </p>
+            <p className="text-muted text-sm mb-4">
+              Click below to view your video card on Tavus.
+            </p>
+            <a
+              href={generatedVideoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block"
+            >
+              <Button variant="secondary" className="px-6">
+                View on Tavus →
+              </Button>
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
